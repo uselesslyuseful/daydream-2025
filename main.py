@@ -90,7 +90,7 @@ def cockpit_init():
 
     # Headphones object
     image = pygame.image.load("headphones.png").convert_alpha()
-    rect = image.get_rect(topleft=(300,600))
+    rect = image.get_rect(topleft=(160,600))
     obj = {
         "name": "headphones",
         "images": [image, pygame.Surface((rect.width, rect.height))],
@@ -110,6 +110,45 @@ def cockpit_init():
         "images": [image, pygame.Surface((rect.width, rect.height))],
         "rect": rect,
         "weight": 9,
+        "clicked": False,
+        "state": 1
+    }
+    obj["images"][1].fill((255, 0, 255))
+    cockpit_objects.append(obj)
+
+    image = pygame.image.load("toolbox.png").convert_alpha()
+    rect = image.get_rect(topleft=(900,500))
+    obj = {
+        "name": "toolbox",
+        "images": [image, pygame.Surface((rect.width, rect.height))],
+        "rect": rect,
+        "weight": 36,
+        "clicked": False,
+        "state": 1
+    }
+    obj["images"][1].fill((255, 0, 255))
+    cockpit_objects.append(obj)
+
+    image = pygame.image.load("trash.png").convert_alpha()
+    rect = image.get_rect(topleft=(450,585))
+    obj = {
+        "name": "trash",
+        "images": [image, pygame.Surface((rect.width, rect.height))],
+        "rect": rect,
+        "weight": 3,
+        "clicked": False,
+        "state": 1
+    }
+    obj["images"][1].fill((255, 0, 255))
+    cockpit_objects.append(obj)
+
+    image = pygame.image.load("dumbbell.png").convert_alpha()
+    rect = image.get_rect(topleft=(750,600))
+    obj = {
+        "name": "dumbbell",
+        "images": [image, pygame.Surface((rect.width, rect.height))],
+        "rect": rect,
+        "weight": 30,
         "clicked": False,
         "state": 1
     }
@@ -162,6 +201,76 @@ def kitchen_init():
 
     return kitchen_objects
 
+def cabin_init():
+    cabin_objects = []
+
+    image = pygame.image.load("computer.png").convert_alpha()
+    rect = image.get_rect(topleft=(1090,570))
+    obj = {
+        "name": "computer",
+        "images": [image, pygame.Surface((rect.width, rect.height))],
+        "rect": rect,
+        "weight": 23,
+        "clicked": False,
+        "state": 1
+    }
+    obj["images"][1].fill((255, 0, 255))
+    cabin_objects.append(obj)
+
+    image = pygame.image.load("charger.png").convert_alpha()
+    rect = image.get_rect(topleft=(520, 515))
+    obj = {
+        "name": "charger",
+        "images": [image, pygame.Surface((rect.width, rect.height))],
+        "rect": rect,
+        "weight": 5,
+        "clicked": False,
+        "state": 1
+    }
+    obj["images"][1].fill((255, 0, 255))
+    cabin_objects.append(obj)
+
+    image = pygame.image.load("scarf.png").convert_alpha()
+    rect = image.get_rect(topleft=(250, 510))
+    obj = {
+        "name": "scarf",
+        "images": [image, pygame.Surface((rect.width, rect.height))],
+        "rect": rect,
+        "weight": 4,
+        "clicked": False,
+        "state": 1
+    }
+    obj["images"][1].fill((255, 0, 255))
+    cabin_objects.append(obj)
+
+    image = pygame.image.load("headband.png").convert_alpha()
+    rect = image.get_rect(topleft=(690,600))
+    obj = {
+        "name": "headband",
+        "images": [image, pygame.Surface((rect.width, rect.height))],
+        "rect": rect,
+        "weight": 3,
+        "clicked": False,
+        "state": 1
+    }
+    obj["images"][1].fill((255, 0, 255))
+    cabin_objects.append(obj)
+
+    image = pygame.image.load("blahaj.png").convert_alpha()
+    rect = image.get_rect(topleft=(400,580))
+    obj = {
+        "name": "blahaj",
+        "images": [image, pygame.Surface((rect.width, rect.height))],
+        "rect": rect,
+        "weight": 14,
+        "clicked": False,
+        "state": 1
+    }
+    obj["images"][1].fill((255, 0, 255))
+    cabin_objects.append(obj)
+
+    return cabin_objects
+
 
 def draw_ui(obj, screen, font):
     # Draw blue box in center
@@ -204,7 +313,6 @@ def cutscene(num):
     font = pygame.font.SysFont("Arial", 32)
     text_color = (255, 255, 255)
 
-    # --- Intro text list ---
     cutText = [
         [
         "Hack Club's new plane, Daydream, is finally off the ground!",
@@ -217,7 +325,7 @@ def cutscene(num):
         [
         "50 entire kilograms -- that's a lot of weight to throw out.",
         "But you made it! Amazing job, you. Finally, you can sit back and relax...",
-        "Wait. Why did the alarms start again?"
+        "Wait. Why did the alarms start again?",
         "...",
         "...",
         "...You cannot be serious. Another line has been cut?!",
@@ -230,10 +338,20 @@ def cutscene(num):
          "Well, you gotta find out. But before you can...",
          "Time to toss out every remaining thing to buy time!",
          "Fight on, soldier.",
-         "We definitely didn't bring popcorn."]
+         "We definitely didn't bring popcorn."],
+         ["There's just no way.",
+          "You've thrown out everything. Every single removable item.",
+          "It's still not enough. The plane is still falling.",
+          "What else is there?",
+          "...Or, maybe you're asking the wrong question.",
+          "The objects weren't the only source of weight.",
+          "The right question is... Who else is there?",
+          "You know there is a saboteur. The sabotage must be in the electrical rooms.",
+          "But the only ones with access are the co-pilot and pilot!",
+          "Kashyap or Erin. It has to be one of them. Or both of them.",
+          "Make your choice -- quickly!"]
     ]
 
-    # --- Helper function: wrap long lines ---
     def render_wrapped_text(text, font, color, max_width):
         words = text.split(" ")
         lines = []
@@ -248,13 +366,12 @@ def cutscene(num):
         if current_line:
             lines.append(current_line.strip())
 
-        # Render surfaces
         rendered = []
         for line in lines:
-            rendered.append(font.render(line, True, color))
+            surf = font.render(line, True, color)
+            rendered.append(surf.convert_alpha())  # allow alpha fading
         return rendered
 
-    # --- Game state ---
     current_index = 0
     running = True
     clock = pygame.time.Clock()
@@ -262,20 +379,37 @@ def cutscene(num):
     while running:
         for event in pygame.event.get():
             if event.type == QUIT:
-                running = False
+                pygame.quit()
+                exit()
             elif event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
-                    running = False
+                    pygame.quit()
+                    exit()
                 elif event.key == K_RETURN:
                     if current_index < len(cutText[num]) - 1:
+                        # fade out current text
+                        for alpha in range(255, -1, -15):
+                            screen.fill((0, 0, 0))
+                            wrapped_lines = render_wrapped_text(
+                                cutText[num][current_index], font, text_color, SCREEN_WIDTH - 100
+                            )
+                            y = SCREEN_HEIGHT // 2 - (len(wrapped_lines) * font.get_linesize()) // 2
+                            for line_surface in wrapped_lines:
+                                fade_surface = line_surface.copy()
+                                fade_surface.set_alpha(alpha)
+                                rect = fade_surface.get_rect(centerx=SCREEN_WIDTH // 2, y=y)
+                                screen.blit(fade_surface, rect)
+                                y += font.get_linesize() + 5
+                            pygame.display.flip()
+                            clock.tick(30)
+
                         current_index += 1
                     else:
+                        # last line → exit cutscene
                         running = False
 
-        # --- Draw ---
-        screen.fill((0, 0, 0))  # background black
-
-        # Render and draw wrapped text
+        # draw current text
+        screen.fill((0, 0, 0))
         wrapped_lines = render_wrapped_text(cutText[num][current_index], font, text_color, SCREEN_WIDTH - 100)
         y = SCREEN_HEIGHT // 2 - (len(wrapped_lines) * font.get_linesize()) // 2
         for line_surface in wrapped_lines:
@@ -285,6 +419,82 @@ def cutscene(num):
 
         pygame.display.flip()
         clock.tick(60)
+
+
+        # draw current text (normal)
+        screen.fill((0, 0, 0))
+        wrapped_lines = render_wrapped_text(cutText[num][current_index], font, text_color, SCREEN_WIDTH - 100)
+        y = SCREEN_HEIGHT // 2 - (len(wrapped_lines) * font.get_linesize()) // 2
+        for line_surface in wrapped_lines:
+            rect = line_surface.get_rect(centerx=SCREEN_WIDTH // 2, y=y)
+            screen.blit(line_surface, rect)
+            y += font.get_linesize() + 5
+
+        pygame.display.flip()
+        clock.tick(60)
+
+def finalChoice(screen, font):
+    choosing = True
+    ending_text = None
+
+    # Define buttons
+    button1 = pygame.Rect(SCREEN_WIDTH // 2 - 250, SCREEN_HEIGHT - 200, 150, 60)
+    button2 = pygame.Rect(SCREEN_WIDTH // 2 - 75, SCREEN_HEIGHT - 200, 150, 60)
+    button3 = pygame.Rect(SCREEN_WIDTH // 2 + 100, SCREEN_HEIGHT - 200, 150, 60)
+
+    while choosing:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                exit()
+            elif event.type == KEYDOWN and event.key == K_ESCAPE:
+                pygame.quit()
+                exit()
+            elif event.type == MOUSEBUTTONDOWN:
+                if button1.collidepoint(event.pos):
+                    ending_text = "You die"
+                    choosing = False
+                elif button2.collidepoint(event.pos):
+                    ending_text = "You live"
+                    choosing = False
+                elif button3.collidepoint(event.pos):
+                    ending_text = "You live"
+                    choosing = False
+
+        # Draw cockpit background
+        bg = pygame.image.load("cockpit.png").convert()
+        screen.blit(bg, (0, 0))
+
+        # Draw buttons
+        pygame.draw.rect(screen, (100, 100, 200), button1)
+        pygame.draw.rect(screen, (100, 100, 200), button2)
+        pygame.draw.rect(screen, (100, 100, 200), button3)
+
+        screen.blit(font.render("Kashyap", True, (255, 255, 255)),
+                    font.render("Kashyap", True, (255, 255, 255)).get_rect(center=button1.center))
+        screen.blit(font.render("Both", True, (255, 255, 255)),
+                    font.render("Both", True, (255, 255, 255)).get_rect(center=button2.center))
+        screen.blit(font.render("Erin", True, (255, 255, 255)),
+                    font.render("Erin", True, (255, 255, 255)).get_rect(center=button3.center))
+        heading_surf = font.render("Who will you eject?", True, (255, 0, 0))
+        heading_rect = heading_surf.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 90))
+        screen.blit(heading_surf, heading_rect)
+        pygame.display.flip()
+
+    # Ending screen
+    showing_ending = True
+    while showing_ending:
+        for event in pygame.event.get():
+            if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
+                pygame.quit()
+                exit()
+
+        screen.fill((0, 0, 0))
+        end_surf = font.render(ending_text, True, (255, 255, 255))
+        end_rect = end_surf.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+        screen.blit(end_surf, end_rect)
+
+        pygame.display.flip()
 
 # -------------------
 # Main loop
@@ -303,11 +513,12 @@ all_sprites = pygame.sprite.Group(map)
 map_animating = False
 map_direction = 1
 frame = 0
-location = "kitchen"
+location = "cabin"
 
 cockpit_objects = cockpit_init()
 kitchen_objects = kitchen_init()
-objects = {"cockpit": cockpit_objects, "cabin": [], "bathroom": [], "cargo": [], "kitchen": kitchen_objects}
+cabin_objects = cabin_init()
+objects = {"cockpit": cockpit_objects, "cabin": cabin_objects, "bathroom": [], "cargo": [], "kitchen": kitchen_objects}
 
 active_object = None
 object_thrown_this_level = False
@@ -315,7 +526,11 @@ weight = 500
 weightLimit = 450
 level = 0
 cutscene(level)
+
+
 while running:
+    if level == 3:
+        finalChoice(screen, font)
     frame += 1
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -365,6 +580,8 @@ while running:
         bg = pygame.image.load("cockpit.png").convert()
     elif location == "kitchen":
         bg = pygame.image.load("kitchen.png").convert()
+    elif location == "cabin":
+        bg = pygame.image.load("cabin.png").convert()
     
     screen.blit(bg, (0, 0))
 
@@ -385,9 +602,10 @@ while running:
         cutscene(level)
         object_thrown_this_level = False
 
-    text_surface = font.render("Weight: " + str(weight), True, (0, 255, 0))
+
+    text_surface = font.render("Weight: " + str(weight), True, (255, 0, 0))
     screen.blit(text_surface, (10, 0))
-    text_surface = font.render("Current weight limit: " + str(weightLimit), True, (255, 0, 0))
+    text_surface = font.render("Current weight limit: " + str(weightLimit), True, (21, 200, 21))
     screen.blit(text_surface, (10, 40))
 
     pygame.display.update()
