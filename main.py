@@ -3,6 +3,8 @@ from pygame.locals import *
 import pygbag
 import asyncio
 
+pygbag.aprint = print
+
 pygame.init()
 
 SCREEN_WIDTH = 1280
