@@ -414,7 +414,7 @@ async def cutscene(num):
         "Better start looking around! Tap on an object to see the weight, and press enter to activate the map."
         ],
         [
-        "50 -- that's a lot of weight to throw out.",
+        "100 -- that's a lot of weight to throw out.",
         "But you made it! Amazing job, you. Finally, you can sit back and relax...",
         "Wait. Why did the alarms start again?",
         "...",
@@ -679,6 +679,7 @@ async def main():
         if level == 5:
             await finalChoice(screen, font)
             running = False
+            break  # <-- ADD THIS LINE
             
         for event in pygame.event.get():
             if event.type == QUIT:
