@@ -271,6 +271,49 @@ def cabin_init():
 
     return cabin_objects
 
+def cargo_init():
+    cargo_objects = []
+
+    image = pygame.image.load("suitcases.png").convert_alpha()
+    rect = image.get_rect(topleft=(420, 267))
+    obj = {
+        "name": "suitcases",
+        "images": [image, pygame.Surface((rect.width, rect.height))],
+        "rect": rect,
+        "weight": 89,
+        "clicked": False,
+        "state": 1
+    }
+    obj["images"][1].fill((255, 0, 255))
+    cargo_objects.append(obj)
+
+    image = pygame.image.load("luggage.png").convert_alpha()
+    rect = image.get_rect(topleft=(80, 180))
+    obj = {
+        "name": "luggage",
+        "images": [image, pygame.Surface((rect.width, rect.height))],
+        "rect": rect,
+        "weight": 59,
+        "clicked": False,
+        "state": 1
+    }
+    obj["images"][1].fill((255, 0, 255))
+    cargo_objects.append(obj)
+
+    image = pygame.image.load("boxes.png").convert_alpha()
+    rect = image.get_rect(topleft=(680,385))
+    obj = {
+        "name": "boxes",
+        "images": [image, pygame.Surface((rect.width, rect.height))],
+        "rect": rect,
+        "weight": 67,
+        "clicked": False,
+        "state": 1
+    }
+    obj["images"][1].fill((255, 0, 255))
+    cargo_objects.append(obj)
+
+    return cargo_objects
 
 def draw_ui(obj, screen, font):
     # Draw blue box in center
@@ -323,14 +366,22 @@ def cutscene(num):
         "Better start looking around! Tap on an object to see the weight, and press enter to activate the map."
         ],
         [
-        "50 entire kilograms -- that's a lot of weight to throw out.",
+        "50 -- that's a lot of weight to throw out.",
         "But you made it! Amazing job, you. Finally, you can sit back and relax...",
         "Wait. Why did the alarms start again?",
         "...",
         "...",
-        "...You cannot be serious. Another line has been cut?!",
+        "...You cannot be serious. Another power line has crashed?!",
         "Good luck. You might need it."
         ],
+        ["Cool, cool. There goes another set of precious items. The plane is gonna be bare at this rate.",
+         "But hey, there we go! The plane's flying steadily again!",
+         "You settle back into your seat, satisfied.",
+         "And then, the plane dips again. Lights flicker overhead.",
+         "Standing up, you despair at another announcement. The power has failed again?!",
+         "This must be human intervention. Once, twice, okay, maybe the plane's just bad.",
+         "But this many times? This was clearly planned -- and you're going to make them pay.",
+         "...But before that, you need to stop the plane from crashing into Toronto."],
         ["Oh. My god.",
          "It says something that you're not even surprised this time when the alarms only pause for a short moment.",
          "There must be a saboteur on the plane.",
@@ -452,13 +503,13 @@ def finalChoice(screen, font):
                 exit()
             elif event.type == MOUSEBUTTONDOWN:
                 if button1.collidepoint(event.pos):
-                    ending_text = "You die"
+                    cutscene(5)
                     choosing = False
                 elif button2.collidepoint(event.pos):
-                    ending_text = "You live"
+                    cutscene(6)
                     choosing = False
                 elif button3.collidepoint(event.pos):
-                    ending_text = "You live"
+                    cutscene(7)
                     choosing = False
 
         # Draw cockpit background
@@ -481,21 +532,6 @@ def finalChoice(screen, font):
         screen.blit(heading_surf, heading_rect)
         pygame.display.flip()
 
-    # Ending screen
-    showing_ending = True
-    while showing_ending:
-        for event in pygame.event.get():
-            if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
-                pygame.quit()
-                exit()
-
-        screen.fill((0, 0, 0))
-        end_surf = font.render(ending_text, True, (255, 255, 255))
-        end_rect = end_surf.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
-        screen.blit(end_surf, end_rect)
-
-        pygame.display.flip()
-
 # -------------------
 # Main loop
 # -------------------
@@ -513,12 +549,13 @@ all_sprites = pygame.sprite.Group(map)
 map_animating = False
 map_direction = 1
 frame = 0
-location = "cabin"
+location = "cargo"
 
 cockpit_objects = cockpit_init()
 kitchen_objects = kitchen_init()
 cabin_objects = cabin_init()
-objects = {"cockpit": cockpit_objects, "cabin": cabin_objects, "bathroom": [], "cargo": [], "kitchen": kitchen_objects}
+cargo_objects = cargo_init()
+objects = {"cockpit": cockpit_objects, "cabin": cabin_objects, "bathroom": [], "cargo": cargo_objects, "kitchen": kitchen_objects}
 
 active_object = None
 object_thrown_this_level = False
@@ -529,7 +566,7 @@ cutscene(level)
 
 
 while running:
-    if level == 3:
+    if level == 4:
         finalChoice(screen, font)
     frame += 1
     for event in pygame.event.get():
@@ -582,6 +619,8 @@ while running:
         bg = pygame.image.load("kitchen.png").convert()
     elif location == "cabin":
         bg = pygame.image.load("cabin.png").convert()
+    elif location == "cargo":
+        bg = pygame.image.load("cargo.png").convert()
     
     screen.blit(bg, (0, 0))
 
