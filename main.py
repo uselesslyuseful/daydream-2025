@@ -1,62 +1,55 @@
 import pygame
 from pygame.locals import *
-import math
 
 pygame.init()
 
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 
-def create_object(objectName):
-    object = pygame.sprite.Sprite()
-    object.name = objectName
-    return object
-
-def update_object(object):
-    if object.image == object.image1:
-        object.image = object.image0
-        object.rect = object.image.get_rect(center = (SCREEN_WIDTH//2,SCREEN_HEIGHT//2))
-
+# -------------------
+# Map
+# -------------------
 def create_map():
     mapBG = pygame.sprite.Sprite()
     mapBG.y = 0
     mapBG.image = pygame.image.load("mapbg.png")
-    mapBG.rect = mapBG.image.get_rect(topleft=(0,SCREEN_HEIGHT))
+    mapBG.rect = mapBG.image.get_rect(topleft=(0, SCREEN_HEIGHT))
 
     full_image = pygame.image.load("mapkitchen.png")
     mapkitchen = pygame.sprite.Sprite()
     mapkitchen.image = full_image.subsurface(pygame.Rect(174, 72, 180, 125)).copy()
     mapkitchen.y = 72
-    mapkitchen.rect = mapkitchen.image.get_rect(topleft=(174,SCREEN_HEIGHT + mapkitchen.y))
+    mapkitchen.rect = mapkitchen.image.get_rect(topleft=(174, SCREEN_HEIGHT + mapkitchen.y))
 
     mapcockpit = pygame.sprite.Sprite()
     full_image = pygame.image.load("mapcockpit.png")
     mapcockpit.y = 102
     mapcockpit.image = full_image.subsurface(pygame.Rect(33, 102, 160, 500)).copy()
-    mapcockpit.rect = mapcockpit.image.get_rect(topleft=(33,SCREEN_HEIGHT + mapcockpit.y))
+    mapcockpit.rect = mapcockpit.image.get_rect(topleft=(33, SCREEN_HEIGHT + mapcockpit.y))
 
     mapcargo = pygame.sprite.Sprite()
     full_image = pygame.image.load("mapcargo.png").convert_alpha()
     mapcargo.y = 67
     mapcargo.image = full_image.subsurface(pygame.Rect(943, 67, 310, 575)).copy()
-    mapcargo.rect = mapcargo.image.get_rect(topleft=(943,SCREEN_HEIGHT + mapcargo.y))
+    mapcargo.rect = mapcargo.image.get_rect(topleft=(943, SCREEN_HEIGHT + mapcargo.y))
 
     mapbathroom = pygame.sprite.Sprite()
     full_image = pygame.image.load("mapbathroom.png").convert_alpha()
     mapbathroom.y = 467
     mapbathroom.image = full_image.subsurface(pygame.Rect(168, 467, 190, 180)).copy()
-    mapbathroom.rect = mapbathroom.image.get_rect(topleft=(168,SCREEN_HEIGHT + mapbathroom.y))
+    mapbathroom.rect = mapbathroom.image.get_rect(topleft=(168, SCREEN_HEIGHT + mapbathroom.y))
 
     mapcabin = pygame.sprite.Sprite()
     full_image = pygame.image.load("mapcabin.png").convert_alpha()
     mapcabin.y = 70
     mapcabin.image = full_image.subsurface(pygame.Rect(353, 70, 655, 571)).copy()
-    mapcabin.rect = mapcabin.image.get_rect(topleft=(353,SCREEN_HEIGHT + mapcabin.y))
+    mapcabin.rect = mapcabin.image.get_rect(topleft=(353, SCREEN_HEIGHT + mapcabin.y))
 
     map = [mapBG, mapcockpit, mapkitchen, mapcargo, mapbathroom, mapcabin]
     return map
 
-def map_update(mouse_pos):
+
+def map_update(mouse_pos, map):
     if map[1].rect.collidepoint(mouse_pos):
         location = "cockpit"
     elif map[2].rect.collidepoint(mouse_pos):
@@ -67,64 +60,261 @@ def map_update(mouse_pos):
         location = "bathroom"
     elif map[5].rect.collidepoint(mouse_pos):
         location = "cabin"
+    else:
+        location = None
     return location
 
-def animate_map(map_direction):
+
+def animate_map(map_direction, map):
     done = True
     for sprite in map:
-        sprite.rect.y += 20 * map_direction  # move up or down
+        sprite.rect.y += 20 * map_direction
         if map_direction == -1:  # going up
             if sprite.rect.y > sprite.y:
                 done = False
             else:
                 sprite.rect.y = sprite.y
         elif map_direction == 1:  # going down
-                if sprite.rect.y < SCREEN_HEIGHT + sprite.y:
-                    done = False
-                else:
-                    sprite.rect.y = SCREEN_HEIGHT + sprite.y
+            if sprite.rect.y < SCREEN_HEIGHT + sprite.y:
+                done = False
+            else:
+                sprite.rect.y = SCREEN_HEIGHT + sprite.y
     return done
 
+
+# -------------------
+# Objects
+# -------------------
 def cockpit_init():
-    return
+    cockpit_objects = []
 
-def cockpit(objects, found_objects):
-    cockpit_objects = objects["cockpit"]
-    found_cockpit_objects = found_objects["cockpit"]
-    print("You're at cockpit")
-    return
+    # Headphones object
+    image = pygame.image.load("headphones.png").convert_alpha()
+    rect = image.get_rect(topleft=(300,600))
+    obj = {
+        "name": "headphones",
+        "images": [image, pygame.Surface((rect.width, rect.height))],
+        "rect": rect,
+        "weight": 12,
+        "clicked": False,
+        "state": 1
+    }
+    obj["images"][1].fill((255, 0, 255))
+    cockpit_objects.append(obj)
 
-def bathroom():
-    print("You're at bathroom")
-    return
+    # Coat object
+    image = pygame.image.load("coat.png").convert_alpha()
+    rect = image.get_rect(topleft=(1150, 300))
+    obj = {
+        "name": "coat",
+        "images": [image, pygame.Surface((rect.width, rect.height))],
+        "rect": rect,
+        "weight": 9,
+        "clicked": False,
+        "state": 1
+    }
+    obj["images"][1].fill((255, 0, 255))
+    cockpit_objects.append(obj)
 
-def kitchen():
-    print("You're at kitchen")
-    return
+    return cockpit_objects
 
-def cabin():
-    return
+def kitchen_init():
+    kitchen_objects = []
 
-def cargo():
-    print("You're at cargo")
-    return
+    image = pygame.image.load("fridge.png").convert_alpha()
+    rect = image.get_rect(topleft=(200,145))
+    obj = {
+        "name": "fridge",
+        "images": [image, pygame.Surface((rect.width, rect.height))],
+        "rect": rect,
+        "weight": 98,
+        "clicked": False,
+        "state": 1
+    }
+    obj["images"][1].fill((255, 0, 255))
+    kitchen_objects.append(obj)
 
+    image = pygame.image.load("cabinet.png").convert_alpha()
+    rect = image.get_rect(topleft=(480, 365))
+    obj = {
+        "name": "cabinet",
+        "images": [image, pygame.Surface((rect.width, rect.height))],
+        "rect": rect,
+        "weight": 45,
+        "clicked": False,
+        "state": 1
+    }
+    obj["images"][1].fill((255, 0, 255))
+    kitchen_objects.append(obj)
+
+    image = pygame.image.load("HM.png").convert_alpha()
+    rect = image.get_rect(topleft=(1120, 450))
+    obj = {
+        "name": "happy meal",
+        "images": [image, pygame.Surface((rect.width, rect.height))],
+        "rect": rect,
+        "weight": 4,
+        "clicked": False,
+        "state": 1
+    }
+    obj["images"][1].fill((255, 0, 255))
+    kitchen_objects.append(obj)
+
+    return kitchen_objects
+
+
+def draw_ui(obj, screen, font):
+    # Draw blue box in center
+    box_rect = pygame.Rect(0, 0, 300, 200)
+    box_rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+    pygame.draw.rect(screen, (0, 0, 255), box_rect)
+
+    # Draw weight
+    text_surf = font.render(f"Object: {obj['name']}", True, (255, 255, 255))
+    text_rect = text_surf.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 60))
+    screen.blit(text_surf, text_rect)
+
+    text2_surf = font.render(f"Weight: {obj['weight']}", True, (255, 255, 255))
+    text2_rect = text2_surf.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 10))
+    screen.blit(text2_surf, text2_rect)
+
+    # Draw buttons
+    eject_button = pygame.Rect(SCREEN_WIDTH // 2 - 110, SCREEN_HEIGHT // 2 + 40, 90, 40)
+    keep_button = pygame.Rect(SCREEN_WIDTH // 2 + 30, SCREEN_HEIGHT // 2 + 40, 90, 40)
+
+    pygame.draw.rect(screen, (200, 0, 0), eject_button)
+    pygame.draw.rect(screen, (0, 200, 0), keep_button)
+
+    screen.blit(font.render("Eject", True, (255, 255, 255)),
+                font.render("Eject", True, (255, 255, 255)).get_rect(center=eject_button.center))
+    screen.blit(font.render("Keep", True, (255, 255, 255)),
+                font.render("Keep", True, (255, 255, 255)).get_rect(center=keep_button.center))
+
+    return eject_button, keep_button
+
+
+def handle_click(obj, mouse_pos):
+    if obj["rect"].collidepoint(mouse_pos):
+        obj["clicked"] = True
+        return True
+    return False
+
+
+def cutscene(num):
+    font = pygame.font.SysFont("Arial", 32)
+    text_color = (255, 255, 255)
+
+    # --- Intro text list ---
+    cutText = [
+        [
+        "Hack Club's new plane, Daydream, is finally off the ground!",
+        "Fitted with not-quite-state-of-the-art equipment, a hundred teenagers, and a whole lot of caffeine, this new plane is certain to be revolutionary.",
+        "And yet, you, dearest hacker, have the worst luck known to mankind.",
+        "Because not long after takeoff, the plane is running out of power!",
+        "If you don't throw enough weight off, you're screwed to hell and back.",
+        "Better start looking around! Tap on an object to see the weight, and press enter to activate the map."
+        ],
+        [
+        "50 entire kilograms -- that's a lot of weight to throw out.",
+        "But you made it! Amazing job, you. Finally, you can sit back and relax...",
+        "Wait. Why did the alarms start again?"
+        "...",
+        "...",
+        "...You cannot be serious. Another line has been cut?!",
+        "Good luck. You might need it."
+        ],
+        ["Oh. My god.",
+         "It says something that you're not even surprised this time when the alarms only pause for a short moment.",
+         "There must be a saboteur on the plane.",
+         "But who in the world would?",
+         "Well, you gotta find out. But before you can...",
+         "Time to toss out every remaining thing to buy time!",
+         "Fight on, soldier.",
+         "We definitely didn't bring popcorn."]
+    ]
+
+    # --- Helper function: wrap long lines ---
+    def render_wrapped_text(text, font, color, max_width):
+        words = text.split(" ")
+        lines = []
+        current_line = ""
+        for word in words:
+            test_line = current_line + word + " "
+            if font.size(test_line)[0] <= max_width:
+                current_line = test_line
+            else:
+                lines.append(current_line.strip())
+                current_line = word + " "
+        if current_line:
+            lines.append(current_line.strip())
+
+        # Render surfaces
+        rendered = []
+        for line in lines:
+            rendered.append(font.render(line, True, color))
+        return rendered
+
+    # --- Game state ---
+    current_index = 0
+    running = True
+    clock = pygame.time.Clock()
+
+    while running:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                running = False
+            elif event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    running = False
+                elif event.key == K_RETURN:
+                    if current_index < len(cutText[num]) - 1:
+                        current_index += 1
+                    else:
+                        running = False
+
+        # --- Draw ---
+        screen.fill((0, 0, 0))  # background black
+
+        # Render and draw wrapped text
+        wrapped_lines = render_wrapped_text(cutText[num][current_index], font, text_color, SCREEN_WIDTH - 100)
+        y = SCREEN_HEIGHT // 2 - (len(wrapped_lines) * font.get_linesize()) // 2
+        for line_surface in wrapped_lines:
+            rect = line_surface.get_rect(centerx=SCREEN_WIDTH // 2, y=y)
+            screen.blit(line_surface, rect)
+            y += font.get_linesize() + 5
+
+        pygame.display.flip()
+        clock.tick(60)
+
+# -------------------
+# Main loop
+# -------------------
+screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
+pygame.display.set_caption("Game Example")
+
+font = pygame.font.SysFont("Arial", 32)
+clock = pygame.time.Clock()
+running = True
+
+bg = pygame.image.load("bg.png").convert()
+map = create_map()
+all_sprites = pygame.sprite.Group(map)
 
 map_animating = False
-map_direction = -1
-bg = pygame.image.load("bg.png")
-running = True
-clock = pygame.time.Clock()
-screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
-map = create_map()
-all_sprites = pygame.sprite.Group()
-for sprite in map:
-    all_sprites.add(sprite)
+map_direction = 1
 frame = 0
-location = "cabin"
-cockpit_objects = cockpit_init()
-objects = {"cockpit":[],"cabin":[],"bathroom":[],"cargo":[],"kitchen":[]}
+location = "kitchen"
 
+cockpit_objects = cockpit_init()
+kitchen_objects = kitchen_init()
+objects = {"cockpit": cockpit_objects, "cabin": [], "bathroom": [], "cargo": [], "kitchen": kitchen_objects}
+
+active_object = None
+object_thrown_this_level = False
+weight = 500
+weightLimit = 450
+level = 0
+cutscene(level)
 while running:
     frame += 1
     for event in pygame.event.get():
@@ -133,38 +323,74 @@ while running:
         elif event.type == KEYDOWN:
             if event.key == K_ESCAPE:
                 running = False
-            if event.key == K_RETURN:
-                if not map_animating:
-                    # toggle direction
-                    map_direction *= -1
-                    map_animating = True
-        elif event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.key == K_RETURN and not map_animating:
+                map_direction *= -1
+                map_animating = True
+        elif event.type == MOUSEBUTTONDOWN:
             mouse_pos = event.pos
-            if map[0].rect.y == 0:
-                location = map_update(mouse_pos)
+            # --- Map is showing ---
+            if map[0].rect.y < SCREEN_HEIGHT:  
+                new_loc = map_update(mouse_pos, map)
+                if new_loc:
+                    location = new_loc
+                    # auto close map
+                    map_direction = 1
+                    map_animating = True
+            # --- Objects only clickable if map is hidden ---
+            elif active_object is None:
+                for obj in objects[location]:
+                    if handle_click(obj, mouse_pos):
+                        active_object = obj
+                        break
+            else:
+                eject_button, keep_button = draw_ui(active_object, screen, font)
+                if eject_button.collidepoint(mouse_pos):
+                    active_object["state"] = 0
+                    weight -= active_object["weight"]
+                    active_object["clicked"] = False
+                    objects[location].remove(active_object)
+                    active_object = None
+                    object_thrown_this_level = True
+                elif keep_button.collidepoint(mouse_pos):
+                    active_object["clicked"] = False
+                    active_object = None
 
-    pressed_keys = pygame.key.get_pressed()
     if map_animating:
-        done = animate_map(map_direction)
-        if done:
+        if animate_map(map_direction, map):
             map_animating = False
-    screen.blit(bg, (0, 0))
-    if location == "cabin":
-        location = cabin()
-        all_sprites.draw(screen)
+
+    # --- draw --
+
+    if location == "cockpit":
+        bg = pygame.image.load("cockpit.png").convert()
     elif location == "kitchen":
-        location = kitchen()
-        all_sprites.draw(screen)
-    elif location == "bathroom":
-        location = bathroom()
-        all_sprites.draw(screen)
-    elif location == "cockpit":
-        location = cockpit({"cockpit":[]}, {"cockpit":[]})
-        all_sprites.draw(screen)
-    elif location == "cargo":
-        location = cargo()
-        all_sprites.draw(screen)
-    else:
-        all_sprites.draw(screen)
+        bg = pygame.image.load("kitchen.png").convert()
+    
+    screen.blit(bg, (0, 0))
+
+    all_sprites.draw(screen)
+
+    # Only draw objects if map is fully hidden
+    if map[0].rect.y >= SCREEN_HEIGHT:
+        for obj in objects[location]:
+            if not obj["clicked"] and obj["state"] == 1:
+                screen.blit(obj["images"][0], obj["rect"].topleft)
+
+    if active_object and active_object["clicked"]:
+        draw_ui(active_object, screen, font)
+
+    if weight <= weightLimit and object_thrown_this_level:
+        level += 1
+        weightLimit -= 50
+        cutscene(level)
+        object_thrown_this_level = False
+
+    text_surface = font.render("Weight: " + str(weight), True, (0, 255, 0))
+    screen.blit(text_surface, (10, 0))
+    text_surface = font.render("Current weight limit: " + str(weightLimit), True, (255, 0, 0))
+    screen.blit(text_surface, (10, 40))
+
     pygame.display.update()
     clock.tick(60)
+
+pygame.quit()
