@@ -166,7 +166,7 @@ def kitchen_init():
         "name": "fridge",
         "images": [image, pygame.Surface((rect.width, rect.height))],
         "rect": rect,
-        "weight": 98,
+        "weight": 78,
         "clicked": False,
         "state": 1
     }
@@ -315,6 +315,50 @@ def cargo_init():
 
     return cargo_objects
 
+def bathroom_init():
+    bathroom_objects = []
+
+    image = pygame.image.load("feces.png").convert_alpha()
+    rect = image.get_rect(topleft=(610, 495))
+    obj = {
+        "name": "feces",
+        "images": [image, pygame.Surface((rect.width, rect.height))],
+        "rect": rect,
+        "weight": 5,
+        "clicked": False,
+        "state": 1
+    }
+    obj["images"][1].fill((255, 0, 255))
+    bathroom_objects.append(obj)
+
+    image = pygame.image.load("toiletpaper.png").convert_alpha()
+    rect = image.get_rect(topleft=(525, 560))
+    obj = {
+        "name": "toilet paper",
+        "images": [image, pygame.Surface((rect.width, rect.height))],
+        "rect": rect,
+        "weight": 7,
+        "clicked": False,
+        "state": 1
+    }
+    obj["images"][1].fill((255, 0, 255))
+    bathroom_objects.append(obj)
+
+    image = pygame.image.load("cup.png").convert_alpha()
+    rect = image.get_rect(topleft=(680,580))
+    obj = {
+        "name": "cup",
+        "images": [image, pygame.Surface((rect.width, rect.height))],
+        "rect": rect,
+        "weight": 9,
+        "clicked": False,
+        "state": 1
+    }
+    obj["images"][1].fill((255, 0, 255))
+    bathroom_objects.append(obj)
+
+    return bathroom_objects
+
 def draw_ui(obj, screen, font):
     # Draw blue box in center
     box_rect = pygame.Rect(0, 0, 300, 200)
@@ -390,7 +434,9 @@ def cutscene(num):
          "Time to toss out every remaining thing to buy time!",
          "Fight on, soldier.",
          "We definitely didn't bring popcorn."],
-         ["There's just no way.",
+        ["Goddamn it.",
+          "It's still not enough."],
+        ["There's just no way.",
           "You've thrown out everything. Every single removable item.",
           "It's still not enough. The plane is still falling.",
           "What else is there?",
@@ -400,7 +446,15 @@ def cutscene(num):
           "You know there is a saboteur. The sabotage must be in the electrical rooms.",
           "But the only ones with access are the co-pilot and pilot!",
           "Kashyap or Erin. It has to be one of them. Or both of them.",
-          "Make your choice -- quickly!"]
+          "Make your choice -- quickly!"],
+        ["So you've chosen Kashyap.",
+         "I'm sure you have your reasons.",
+         "And now, it's time for Kashyap to fall, fall and fall."],
+        ["You suspicious hacker, you think they're both in on it!",
+         "Let's see if you're right. Bye, Kashyap! Bye, Erin!"],
+        ["So you've chosen Erin.",
+         "Well, she got to experience being tall for the duration of a Daydream!",
+         "Bye, Erin."]
     ]
 
     def render_wrapped_text(text, font, color, max_width):
@@ -503,13 +557,13 @@ def finalChoice(screen, font):
                 exit()
             elif event.type == MOUSEBUTTONDOWN:
                 if button1.collidepoint(event.pos):
-                    cutscene(5)
-                    choosing = False
-                elif button2.collidepoint(event.pos):
                     cutscene(6)
                     choosing = False
-                elif button3.collidepoint(event.pos):
+                elif button2.collidepoint(event.pos):
                     cutscene(7)
+                    choosing = False
+                elif button3.collidepoint(event.pos):
+                    cutscene(8)
                     choosing = False
 
         # Draw cockpit background
@@ -548,27 +602,26 @@ all_sprites = pygame.sprite.Group(map)
 
 map_animating = False
 map_direction = 1
-frame = 0
-location = "cargo"
+location = "bathroom"
 
 cockpit_objects = cockpit_init()
 kitchen_objects = kitchen_init()
 cabin_objects = cabin_init()
 cargo_objects = cargo_init()
-objects = {"cockpit": cockpit_objects, "cabin": cabin_objects, "bathroom": [], "cargo": cargo_objects, "kitchen": kitchen_objects}
+bathroom_objects = bathroom_init()
+objects = {"cockpit": cockpit_objects, "cabin": cabin_objects, "bathroom": bathroom_objects, "cargo": cargo_objects, "kitchen": kitchen_objects}
 
 active_object = None
 object_thrown_this_level = False
-weight = 500
-weightLimit = 450
+weight = 600
+weightLimit = 500
 level = 0
 cutscene(level)
 
 
 while running:
-    if level == 4:
+    if level == 5:
         finalChoice(screen, font)
-    frame += 1
     for event in pygame.event.get():
         if event.type == QUIT:
             running = False
@@ -621,6 +674,8 @@ while running:
         bg = pygame.image.load("cabin.png").convert()
     elif location == "cargo":
         bg = pygame.image.load("cargo.png").convert()
+    elif location == "bathroom":
+        bg = pygame.image.load("bathroom.png").convert()
     
     screen.blit(bg, (0, 0))
 
@@ -637,7 +692,7 @@ while running:
 
     if weight <= weightLimit and object_thrown_this_level:
         level += 1
-        weightLimit -= 50
+        weightLimit -= 100
         cutscene(level)
         object_thrown_this_level = False
 
